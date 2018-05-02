@@ -1,4 +1,5 @@
 #include "PDB.hpp"
+#include "Kahan_summation_algorithm.hpp"
 
 Vector3D displacement_of_residue(const Protein& protein_a,const Protein& protein_b,const int& index_target_residue);
 double correlation(const Vector3D& a, const Vector3D& b);
@@ -9,6 +10,8 @@ int main(int argc, char* argv[])
    for(int i=0;i<argc;++i){ argments.push_back(argv[i]); }
 
    std::string input_file_name;
+   std::string output_file_name;
+   int target_residue_index;
 
    for(size_t i=0,i_size=argments.size();i<i_size;++i)
    {
@@ -17,6 +20,14 @@ int main(int argc, char* argv[])
       if("in"==vs.at(0))
       {
          input_file_name=vs.at(1);
+      }
+      if("out"==vs.at(0))
+      {
+         output_file_name=vs.at(1);
+      }
+      if("target"==vs.at(0))
+      {
+         target_residue_index=boost::lexical_cast<double>(vs.at(1));
       }
    }
 
