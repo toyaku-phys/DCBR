@@ -12,23 +12,40 @@ int main(int argc, char* argv[])
    std::string input_file_name;
    std::string output_file_name;
    int target_residue_index;
+   std::tuple<double,double> time_range;
 
-   for(size_t i=0,i_size=argments.size();i<i_size;++i)
+   try
    {
-      std::vector<std::string> vs;
-      boost::algorithm::split(vs,argments.at(i),boost::is_any_of(" "));
-      if("in"==vs.at(0))
+      for(size_t i=0,i_size=argments.size();i<i_size;++i)
       {
-         input_file_name=vs.at(1);
+         std::vector<std::string> vs;
+         boost::algorithm::split(vs,argments.at(i),boost::is_any_of(" "));
+         if("in"==vs.at(0))
+         {
+            input_file_name=vs.at(1);
+         }
+         if("out"==vs.at(0))
+         {
+            output_file_name=vs.at(1);
+         }
+         if("target"==vs.at(0))
+         {
+            target_residue_index=boost::lexical_cast<double>(vs.at(1));
+         }
+         if("time"==vs.at(0))
+         {
+            std::vector<std::string> vs_;
+            boost::algotrithm::split(vs_,vs.at(1),boost::is_any_of("-"));
+            time_range=std::tuple<double,double>
+            (
+               boost::lexical_cast<double>(vs_.at(0)),
+               boost::lexical_cast<double>(vs_.at(1))
+            ); 
+         }
       }
-      if("out"==vs.at(0))
-      {
-         output_file_name=vs.at(1);
-      }
-      if("target"==vs.at(0))
-      {
-         target_residue_index=boost::lexical_cast<double>(vs.at(1));
-      }
+   }catch(...)
+   {
+      std::cout<<"Failure @input argments"<<std::endl;   
    }
 
    std::vector<Protein> proteins = load(input_file_name);
