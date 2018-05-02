@@ -19,6 +19,9 @@ class Protein
    std::vector<Atom> atoms;   
    public:
    Protein(){}
+   public:
+   int get_index_of_first_resudue()const;
+   int get_index_of_last_resudue()const;
 };
 
 class Atom
@@ -35,6 +38,7 @@ class Atom
    Atom(const std::vector<std::string>& vs);
 };
 
+
 Atom::Atom(const std::vector<std::string>& vs)
 {
    index_atom = boost::lexical_cast<int> (vs.at(1));
@@ -46,6 +50,16 @@ Atom::Atom(const std::vector<std::string>& vs)
    occupancy  = boost::lexical_cast<int> (vs.at(9));
    b_factor   = boost::lexical_cast<int> (vs.at(10));
 }
+
+int Protein::get_index_of_first_resudue()const
+{
+     return (atoms.front()).index_res; 
+}
+int Protein::get_index_of_last_resudue()const
+{
+   return (atoms.back()).index_res; 
+}
+
 
 std::vector<Protein> load(const std::string file_name)
 {

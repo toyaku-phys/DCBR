@@ -18,5 +18,12 @@ int main(int argc, char* argv[])
       }
    }
 
+   std::vector<Protein> proteins = load(input_file_name);
+
+   for(size_t i=0,i_size=proteins.size();i<i_size;++i)
+   {
+      
+   }
+
    return EXIT_SUCCESS;
 }
