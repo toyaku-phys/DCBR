@@ -12,7 +12,7 @@ int main(int argc, char* argv[])
    std::string input_file_name;
    std::string output_file_name;
    int target_residue_index;
-   std::tuple<double,double> time_range;
+   std::tuple<double,double> time_range(-DBL_MAX,+DBL_MAX);
 
    try
    {

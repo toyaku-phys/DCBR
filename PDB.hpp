@@ -89,7 +89,7 @@ Vector3D Protein::get_center_of_residue(const int& index)const
    return result;
 }
 
-std::vector<Protein> load(const std::string file_name)
+std::vector<Protein> load(const std::string file_name, const std::tuple<double,double>& t_range)
 {
    std::vector<Protein> result;
    Getline gl(file_name);
@@ -115,7 +115,10 @@ std::vector<Protein> load(const std::string file_name)
       }
       if("ENDMDL"==vs.at(0))
       {
-         result.push_back(ptmp);
+         if(std::get<0>(t_range)<=ptmp.time && ptmp.time<=std::get<1>(t_range))
+         {
+            result.push_back(ptmp);
+         }
       }
    }
    return result;
