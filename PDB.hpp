@@ -5,11 +5,11 @@
 #include <boost/lexical_cast.hpp>
 #include "Vector3D.hpp"
 #include "ReadFile.hpp"
-//ENDMDLできれるお
 
 std::vector<std::string> split(const std::string req);
 
 class Atom;
+class Protein;
 
 class Protein
 {
