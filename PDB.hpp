@@ -22,6 +22,7 @@ class Protein
    public:
    int get_index_of_first_resudue()const;
    int get_index_of_last_resudue()const;
+   std::vector<Vector3D> get_atoms_of_residue(const int& index)const;
 };
 
 class Atom
@@ -32,7 +33,7 @@ class Atom
    std::string res;      //name of residue
    std::string domain;   //name of domain
    int index_res;        //index of residue
-   Vector3D positon;     //positon of atom
+   Vector3D position;     //position of atom
    double occupancy;
    double b_factor;
    Atom(const std::vector<std::string>& vs);
@@ -46,7 +47,7 @@ Atom::Atom(const std::vector<std::string>& vs)
    res        = vs.at(3);
    domain     = vs.at(4);
    index_res  = boost::lexical_cast<int> (vs.at(5));
-   positon    = Vector3D(boost::lexical_cast<int> (vs.at(6)),boost::lexical_cast<int> (vs.at(7)),boost::lexical_cast<int> (vs.at(8)));
+   position    = Vector3D(boost::lexical_cast<int> (vs.at(6)),boost::lexical_cast<int> (vs.at(7)),boost::lexical_cast<int> (vs.at(8)));
    occupancy  = boost::lexical_cast<int> (vs.at(9));
    b_factor   = boost::lexical_cast<int> (vs.at(10));
 }
@@ -55,9 +56,24 @@ int Protein::get_index_of_first_resudue()const
 {
      return (atoms.front()).index_res; 
 }
+
 int Protein::get_index_of_last_resudue()const
 {
    return (atoms.back()).index_res; 
+}
+
+std::vector<Vector3D> Protein::get_atoms_of_residue(const int& index)const
+{
+   std::vector<Vector3D> result;
+   for(size_t i=0,i_size=atoms.size();i<i_size;++i)
+   {
+      const Atom& a = atoms.at(i);
+      if(index==a.index_res && "CA"!=a.pt)
+      {
+         result.push_back(a.position);
+      }
+   }
+   return result; 
 }
 
 
