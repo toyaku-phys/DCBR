@@ -23,6 +23,7 @@ class Protein
    int get_index_of_first_resudue()const;
    int get_index_of_last_resudue()const;
    std::vector<Vector3D> get_atoms_of_residue(const int& index)const;
+   Vector3D get_center_of_residue(const int& index)const;
 };
 
 class Atom
@@ -76,6 +77,17 @@ std::vector<Vector3D> Protein::get_atoms_of_residue(const int& index)const
    return result; 
 }
 
+Vector3D Protein::get_center_of_residue(const int& index)const
+{
+   const std::vector<Vector3D> ps = get_atoms_of_residue(index);
+   Vector3D result;
+   for(size_t i=0,i_size=ps.size();i<i_size;++i)
+   {
+      result += ps.at(i);   
+   }
+   result/=ps.size();
+   return result;
+}
 
 std::vector<Protein> load(const std::string file_name)
 {
