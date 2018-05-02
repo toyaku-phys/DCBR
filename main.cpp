@@ -1,6 +1,7 @@
 #include "PDB.hpp"
 
 Vector3D displacement_of_residue(const Protein& protein_a,const Protein& protein_b,const int& index_target_residue);
+double correlation(const Vector3D& a, const Vector3D& b);
 
 int main(int argc, char* argv[])
 {
@@ -39,4 +40,9 @@ Vector3D displacement_of_residue
    return
    protein_b.get_center_of_residue(index_target_residue)
    -protein_a.get_center_of_residue(index_target_residue);
+}
+
+double correlation(const Vector3D& a, const Vector3D& b)
+{
+   return a*b;   
 }
