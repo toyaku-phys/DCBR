@@ -1,4 +1,4 @@
-# Definition of the function
+# Definition of the correlation function
 
 The displacement correlation function for pair of residues is defined as
 
@@ -7,13 +7,14 @@ The displacement correlation function for pair of residues is defined as
 Here, <img src="https://latex.codecogs.com/gif.latex?\vec{p}_i" /> is center of atom positions of 
 <img src="https://latex.codecogs.com/gif.latex?i" />
 -th residue (without "CA" atom).
-
-If you need the center of mass, you can *write* it!
+<img src="https://latex.codecogs.com/gif.latex?\Delta" /> is time interval in input file.
+Time average <img src="https://latex.codecogs.com/gif.latex?C(i,j):=\langle\cdots\rangle_t" /> is calculated using all samples.
+If you need the center of mass or diffrent time interval, you can *write* next DCBR!
 
 
 Our DCBR program provides 
 <img src="https://latex.codecogs.com/gif.latex?\{C(i,j)\}" />
-, where residue index <img src="https://latex.codecogs.com/gif.latex?i" /> is fixed.
+, where index of residue <img src="https://latex.codecogs.com/gif.latex?i" /> is fixed (this residue is reference).
 
 ## Using DCBR
 dcbr in=input_file.pdb out=output_file_name step=0-1000 target=index_of_reference_residue
