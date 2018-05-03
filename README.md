@@ -1,5 +1,5 @@
 # DCBR
-DCBR analyzes the correlation in the displacement of protein residue pairs.
+DCBR analyzes the correlation for the displacement of protein residue pairs.
 
 ## Definition of the correlation function
 
