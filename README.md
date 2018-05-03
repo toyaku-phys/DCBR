@@ -7,8 +7,9 @@ The displacement correlation function for pair of residues is defined as
 Here, <img src="https://latex.codecogs.com/gif.latex?\vec{p}_i" /> is center of atom positions of 
 <img src="https://latex.codecogs.com/gif.latex?i" />
 -th residue (without "CA" atom).
-<img src="https://latex.codecogs.com/gif.latex?\Delta" /> is time interval in input file.
-Time average <img src="https://latex.codecogs.com/gif.latex?C(i,j):=\langle\cdots\rangle_t" /> is calculated using all samples.
+<img src="https://latex.codecogs.com/gif.latex?\Delta" /> is time interval in the input file.
+Time average <img src="https://latex.codecogs.com/gif.latex?C(i,j):=\langle\cdots\rangle_t" /> 
+is calculated using all samples.
 If you need the center of mass or diffrent time interval, you can *write* next DCBR!
 
 
@@ -18,3 +19,6 @@ Our DCBR program provides
 
 ## Using DCBR
 dcbr in=input_file.pdb out=output_file_name step=0-1000 target=index_of_reference_residue
+
+## Building
+example: clang++-5.0 -std=c++1z -stdlib=libc++ main.cpp -O2 -o dcbr
