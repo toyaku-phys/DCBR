@@ -10,7 +10,8 @@ with
 
 Here, <img src="https://latex.codecogs.com/gif.latex?\vec{p}_i" /> is center of atom positions of 
 <img src="https://latex.codecogs.com/gif.latex?i" />
--th residue. (if you need center of mass, you can write it!)
+-th residue (without "CA" atom).
+If you need center of mass, you can write it!
 
 
 Our DCBR program provides 
