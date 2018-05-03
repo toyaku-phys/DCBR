@@ -55,6 +55,7 @@ int main(int argc, char* argv[])
    }
 
    std::vector<Protein> proteins = load(input_file_name,time_range);
+   pbc_setup(proteins.front().cryst);
 
    if(proteins.size()<2){std::cout<<"The number of samples is insufficient."<<std::endl;exit(0);}
 
@@ -100,12 +101,13 @@ Vector3D displacement_of_residue
    const int& index_target_residue
 )
 {
-   return
-   protein_b.get_center_of_residue(index_target_residue)
-   -protein_a.get_center_of_residue(index_target_residue);
+   const Vector3D b = protein_b.get_center_of_residue(index_target_residue);
+   const Vector3D a = pbc(protein_a.get_center_of_residue(index_target_residue),a);
+   return b-a;
 }
 
 double correlation(const Vector3D& a, const Vector3D& b)
 {
    return a*b;   
 }
+

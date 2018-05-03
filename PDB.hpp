@@ -5,6 +5,7 @@
 #include <boost/lexical_cast.hpp>
 #include "Vector3D.hpp"
 #include "ReadFile.hpp"
+#include "PBC.hpp"
 
 std::vector<std::string> split(const std::string req);
 
@@ -79,7 +80,11 @@ std::vector<Vector3D> Protein::get_atoms_of_residue(const int& index)const
 
 Vector3D Protein::get_center_of_residue(const int& index)const
 {
-   const std::vector<Vector3D> ps = get_atoms_of_residue(index);
+   std::vector<Vector3D> ps = get_atoms_of_residue(index);
+   for(size_t i=1,i_size=ps.size();i<i_size;++i)
+   {
+      ps.at(i)=pbc(ps.at(i),ps.at(0));   
+   }
    Vector3D result;
    for(size_t i=0,i_size=ps.size();i<i_size;++i)
    {
