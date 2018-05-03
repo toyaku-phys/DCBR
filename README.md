@@ -1,4 +1,7 @@
-# Definition of the correlation function
+# DCBR
+DCBR analyzes the correlation for the displacement of protein residue pairs.
+
+## Definition of the correlation function
 
 The displacement correlation function for pair of residues is defined as
 
@@ -22,3 +25,9 @@ dcbr in=input_file.pdb out=output_file_name step=0-1000 target=index_of_referenc
 
 ## Building
 example: clang++-5.0 -std=c++1z -stdlib=libc++ main.cpp -O2 -o dcbr
+
+Also, our code depends on the boost library.
+
+## Future work
+- Display this correlation with PyMol.
+- Setting of <img src="https://latex.codecogs.com/gif.latex?\Delta" /> 
