@@ -3,14 +3,13 @@
 The displacement correlation function for pair of residues is defined as
 
 <img src="https://latex.codecogs.com/gif.latex?C(i,j):=\langle\vec{u}_i(t)\cdot\vec{u}_j(t)\rangle_t" />
-
 with
-
 <img src="https://latex.codecogs.com/gif.latex?\vec{u}_i(t):=\vec{p}_i(t+\Delta)-\vec{p}_i(t)." />
 
 Here, <img src="https://latex.codecogs.com/gif.latex?\vec{p}_i" /> is center of atom positions of 
 <img src="https://latex.codecogs.com/gif.latex?i" />
 -th residue (without "CA" atom).
+
 If you need center of mass, you can write it!
 
 
