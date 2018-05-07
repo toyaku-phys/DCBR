@@ -69,7 +69,7 @@ int main(int argc, char* argv[])
    {
       try{
       protein_m0=get_next(gl,time_range);
-      }catch(...){std::cout<<"end of load"<<std::endl;break;}
+      }catch(...){std::cout<<"end"<<std::endl;break;}
 
       std::vector<Vector3D> us;//include disp. of each residue
       for(int r=first_res;r<=last_res;++r)
@@ -80,12 +80,11 @@ int main(int argc, char* argv[])
       for(size_t r=0,r_size=us.size();r<r_size;++r)
       {
          const Vector3D& u_j = us.at(r);
-         std::cout<<u_j<<std::endl;
          const auto res_c = correlation(u_i,u_j);
          correlations.at(r) += res_c;
       }
       protein_m1=protein_m0;
-      std::cout<<++step<<std::endl;
+      std::cout<<"+"<<std::flush;
    }
    std::ofstream ofs(output_file_name,std::ios::trunc);
    ofs<<"# Res.index <u_i*u_j>_t"<<std::endl;
