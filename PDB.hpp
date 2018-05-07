@@ -128,6 +128,47 @@ std::vector<Protein> load(const std::string file_name, const std::tuple<double,d
    return result;
 }
 
+Protein get_next(Getline& gl, const std::tuple<double,double>& t_range, bool is_first=false)
+{
+   Protein res;
+   std::string tmp;
+   while(gl.is_open())
+   {
+      try{
+      tmp = gl.get(); 
+      }catch(...){break;}
+      std::vector<std::string> vs = split(tmp);
+      if("TITLE"==vs.at(0))
+      {
+         res.time=boost::lexical_cast<double>(vs.back());
+      }
+      if("CRYST1"==vs.at(0))
+      {
+         res.cryst = Vector3D(boost::lexical_cast<double>(vs.at(1)),boost::lexical_cast<double>(vs.at(2)),boost::lexical_cast<double>(vs.at(3)));
+      }
+      if("ATOM"==vs.at(0))
+      {
+         res.atoms.push_back(Atom(vs));
+      }
+      if("ENDMDL"==vs.at(0))
+      {
+         if(std::get<0>(t_range)<=res.time && res.time<=std::get<1>(t_range))
+         {
+            return res;
+         }
+         else
+         {
+            if(!is_first)
+            {
+               throw "over_run";
+            }
+         }
+      }
+   }
+   throw "error";
+   return Protein();
+}
+
 std::vector<std::string> split(const std::string req)
 {
    std::vector<std::string> tmp_vsplit;
