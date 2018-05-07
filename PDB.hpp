@@ -47,11 +47,10 @@ Atom::Atom(const std::vector<std::string>& vs)
    index_atom = boost::lexical_cast<int> (vs.at(1));
    pt         = vs.at(2);
    res        = vs.at(3);
-   domain     = vs.at(4);
-   index_res  = boost::lexical_cast<int> (vs.at(5));
-   position    = Vector3D(boost::lexical_cast<int> (vs.at(6)),boost::lexical_cast<int> (vs.at(7)),boost::lexical_cast<int> (vs.at(8)));
-   occupancy  = boost::lexical_cast<int> (vs.at(9));
-   b_factor   = boost::lexical_cast<int> (vs.at(10));
+   index_res  = boost::lexical_cast<int> (vs.at(4));
+   position    = Vector3D(boost::lexical_cast<double> (vs.at(5)),boost::lexical_cast<double> (vs.at(6)),boost::lexical_cast<double> (vs.at(7)));
+   occupancy  = boost::lexical_cast<double> (vs.at(8));
+   b_factor   = boost::lexical_cast<double> (vs.at(9));
 }
 
 int Protein::get_index_of_first_resudue()const

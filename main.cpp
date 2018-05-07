@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
       for(size_t i=0,i_size=argments.size();i<i_size;++i)
       {
          std::vector<std::string> vs;
-         boost::algorithm::split(vs,argments.at(i),boost::is_any_of(" "));
+         boost::algorithm::split(vs,argments.at(i),boost::is_any_of("="));
          if("in"==vs.at(0))
          {
             input_file_name=vs.at(1);
@@ -55,6 +55,7 @@ int main(int argc, char* argv[])
    }
 
    std::vector<Protein> proteins = load(input_file_name,time_range);
+   std::cout<<proteins.size()<<std::endl;
    pbc_setup(proteins.front().cryst);
 
    if(proteins.size()<2){std::cout<<"The number of samples is insufficient."<<std::endl;exit(0);}
@@ -70,7 +71,7 @@ int main(int argc, char* argv[])
       {
          us.push_back(displacement_of_residue(proteins.at(i),proteins.at(i+1),r));
       }
-      const int pos_target = target_residue_index-first_res;
+      //const int pos_target = target_residue_index-first_res;
       const Vector3D& u_i = us.at(pos_target);
       for(size_t r=0,r_size=us.size();r<r_size;++r)
       {
