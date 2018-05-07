@@ -84,15 +84,16 @@ int main(int argc, char* argv[])
          const auto res_c = correlation(u_i,u_j);
          correlations.at(r) += res_c;
       }
+      protein_m1=protein_m0;
       std::cout<<++step<<std::endl;
    }
    std::ofstream ofs(output_file_name,std::ios::trunc);
    ofs<<"# Res.index <u_i*u_j>_t"<<std::endl;
    for(size_t i=0,i_size=correlations.size();i<i_size;++i)
    {
-      if(i!=target_residue_index)
+      if((i+first_res)!=target_residue_index)
       {
-         ofs<<i+first_res<<" "<<correlations.at(i).get_av()<<std::endl;
+         ofs<<(i+first_res)<<" "<<correlations.at(i).get_av()<<std::endl;
       }else
       {
          ofs<<std::endl<<std::endl;
@@ -114,8 +115,8 @@ Vector3D displacement_of_residue
    return b-a;
 }
 
-double correlation(const Vector3D& a, const Vector3D& b)
+double correlation(const Vector3D& u_i, const Vector3D& u_j)
 {
-   return a*b;   
+   return u_i*u_j;   
 }
 
