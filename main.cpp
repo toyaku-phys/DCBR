@@ -64,6 +64,8 @@ int main(int argc, char* argv[])
    const int last_res  = protein_m1.get_index_of_last_resudue();
    const int pos_target = target_residue_index-first_res;
    std::vector<Kahan> correlations(last_res-first_res+1);
+   std::vector<Kahan,Kahan,Kahan> positions(last_res-first_res+1);
+   std::vector<Kahan> msd(last_res-first_res+1);
    int step=0;
    for(;;)
    {
@@ -74,7 +76,14 @@ int main(int argc, char* argv[])
       std::vector<Vector3D> us;//include disp. of each residue
       for(int r=first_res;r<=last_res;++r)
       {
-         us.push_back(displacement_of_residue(protein_m1,protein_m0,r));
+         const Vector3D b = protein_m0.get_center_of_residue(index_target_residue);
+         const Vector3D a = pbc(protein_m1.get_center_of_residue(index_target_residue),b);
+         std::get<0>(positions.at(r-first_res))+=b.x;
+         std::get<1>(positions.at(r-first_res))+=b.y;
+         std::get<2>(positions.at(r-first_res))+=b.z;
+         const auto ab = b-a;
+         msd.at(r-first_res)+=ab.norm();
+         us.push_back(ab);
       }
       const Vector3D& u_i = us.at(pos_target);
       for(size_t r=0,r_size=us.size();r<r_size;++r)
@@ -86,19 +95,21 @@ int main(int argc, char* argv[])
       protein_m1=protein_m0;
       std::cout<<"+"<<std::flush;
    }
-   std::ofstream ofs(output_file_name,std::ios::trunc);
-   ofs<<"# Res.index <u_i*u_j>_t"<<std::endl;
-   for(size_t i=0,i_size=correlations.size();i<i_size;++i)
    {
-      if((i+first_res)!=target_residue_index)
+      std::ofstream ofs(output_file_name,std::ios::trunc);
+      ofs<<"# Res.index <u_i*u_j>_t"<<std::endl;
+      for(size_t i=0,i_size=correlations.size();i<i_size;++i)
       {
-         ofs<<(i+first_res)<<" "<<correlations.at(i).get_av()<<std::endl;
-      }else
-      {
-         ofs<<std::endl<<std::endl;
+         if((i+first_res)!=target_residue_index)
+         {
+            ofs<<(i+first_res)<<" "<<correlations.at(i).get_av()<<std::endl;
+         }else
+         {
+            ofs<<std::endl<<std::endl;
+         }
       }
+      ofs.close();
    }
-   ofs.close();
    return EXIT_SUCCESS;
 }
 
