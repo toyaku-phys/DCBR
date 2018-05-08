@@ -62,15 +62,15 @@ int main(int argc, char* argv[])
    pbc_setup(protein_m1.cryst);
 
 
-   const int first_res = protein_m1.get_index_of_first_resudue();
-   const int last_res  = protein_m1.get_index_of_last_resudue();
+   const int first_res  = protein_m1.get_index_of_first_resudue();
+   const int last_res   = protein_m1.get_index_of_last_resudue();
    const int pos_target = target_residue_index-first_res;
    std::vector<Kahan> correlations(last_res-first_res+1);
    int step=0;
    for(;;)
    {
       try{
-      protein_m0=get_next(gl,time_range);
+      protein_m0 = get_next(gl,time_range);
       }catch(...){std::cout<<"end"<<std::endl;break;}
 
       std::vector<Vector3D> us;//include disp. of each residue
@@ -84,14 +84,14 @@ int main(int argc, char* argv[])
       const Vector3D& u_i = us.at(pos_target);
       for(size_t r=0,r_size=us.size();r<r_size;++r)
       {
-         const Vector3D& u_j = us.at(r);
-         const auto res_c = correlation(u_i,u_j);
-         correlations.at(r) += res_c;
+         const Vector3D& u_j    = us.at(r);
+         const auto      res_c  = correlation(u_i,u_j);
+         correlations.at(r)    += res_c;
       }
-      protein_m1=protein_m0;
-      protein_m0.fit_to_(master);
+      protein_m1 = protein_m0;
+      protein_m0.fit_to_(master,target_residue_index);
       plot_ca_for_gnuplot("test.cas",step,protein_m0);
-      std::cout<<"+"<<std::flush;
+      std::cout<<"†"<<std::flush;
       ++step;
    }
    {
@@ -137,7 +137,7 @@ void plot_ca_for_gnuplot(const std::string file_name, const int step, const Prot
       std::ofstream ofs(file_name,std::ios::trunc);
       for(size_t i=0,i_size=cas.size();i<i_size;++i)
       {
-         ofs<<cas.at(i)<<std::endl;
+         ofs<<i<<" "<<cas.at(i)<<std::endl;
       }
       ofs<<std::endl<<std::endl;
       ofs.close();
@@ -147,7 +147,7 @@ void plot_ca_for_gnuplot(const std::string file_name, const int step, const Prot
       std::ofstream ofs(file_name,std::ios::app);
       for(size_t i=0,i_size=cas.size();i<i_size;++i)
       {
-         ofs<<cas.at(i)<<std::endl;
+         ofs<<i<<" "<<cas.at(i)<<std::endl;
       }
       ofs<<std::endl<<std::endl;
       ofs.close();
