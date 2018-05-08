@@ -9,6 +9,7 @@
 
 Vector3D displacement_of_residue(const Protein& protein_a,const Protein& protein_b,const int& index_target_residue);
 double correlation(const Vector3D& a, const Vector3D& b);
+void plot_ca_for_gnuplot(const std::string file_name, const int step, const Protein& pr);
 
 int main(int argc, char* argv[])
 {
@@ -55,7 +56,8 @@ int main(int argc, char* argv[])
    }
 
    Getline gl(input_file_name);
-   Protein protein_m1 = get_next(gl,time_range,true);
+   Protein master     = get_next(gl,time_range,true);
+   Protein protein_m1 = master;
    Protein protein_m0;
    pbc_setup(protein_m1.cryst);
 
@@ -76,11 +78,7 @@ int main(int argc, char* argv[])
       {
          const Vector3D b = protein_m0.get_center_of_residue(target_residue_index);
          const Vector3D a = pbc(protein_m1.get_center_of_residue(target_residue_index),b);
-         //std::get<0>(positions.at(r-first_res))+=b.x;
-         //std::get<1>(positions.at(r-first_res))+=b.y;
-         //std::get<2>(positions.at(r-first_res))+=b.z;
          const auto ab = b-a;
-         //msd.at(r-first_res)+=ab.norm();
          us.push_back(ab);
       }
       const Vector3D& u_i = us.at(pos_target);
@@ -91,7 +89,10 @@ int main(int argc, char* argv[])
          correlations.at(r) += res_c;
       }
       protein_m1=protein_m0;
+      protein_m0.fit_to_(master);
+      plot_ca_for_gnuplot("test.cas",step,protein_m0);
       std::cout<<"+"<<std::flush;
+      ++step;
    }
    {
       std::ofstream ofs(output_file_name,std::ios::trunc);
@@ -128,3 +129,27 @@ double correlation(const Vector3D& u_i, const Vector3D& u_j)
    return u_i*u_j;   
 }
 
+void plot_ca_for_gnuplot(const std::string file_name, const int step, const Protein& pr)
+{
+   const std::vector<Vector3D> cas = pr.get_CAs();
+   if(0==step)
+   {
+      std::ofstream ofs(file_name,std::ios::trunc);
+      for(size_t i=0,i_size=cas.size();i<i_size;++i)
+      {
+         ofs<<cas.at(i)<<std::endl;
+      }
+      ofs<<std::endl<<std::endl;
+      ofs.close();
+   }
+   else
+   {
+      std::ofstream ofs(file_name,std::ios::app);
+      for(size_t i=0,i_size=cas.size();i<i_size;++i)
+      {
+         ofs<<cas.at(i)<<std::endl;
+      }
+      ofs<<std::endl<<std::endl;
+      ofs.close();
+   }
+}
