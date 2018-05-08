@@ -3,14 +3,19 @@
 
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
+#include <random>
 #include "Vector3D.hpp"
 #include "ReadFile.hpp"
 #include "PBC.hpp"
+#include "Kahan_summation_algorithm.hpp"
+#include "Quaternion.hpp"
 
 std::vector<std::string> split(const std::string req);
 
 class Atom;
 class Protein;
+
+std::mt19937_64 mt(472354627351723);
 
 class Protein
 {
@@ -25,6 +30,8 @@ class Protein
    int get_index_of_last_resudue()const;
    std::vector<Vector3D> get_atoms_of_residue(const int& index)const;
    Vector3D get_center_of_residue(const int& index)const;
+   std::vector<Vector3D> get_CAs()const;
+   void fit_to_(const Protein& ref, const int step_trial=10000);
 };
 
 class Atom
@@ -91,6 +98,110 @@ Vector3D Protein::get_center_of_residue(const int& index)const
    }
    result/=ps.size();
    return result;
+}
+
+std::vector<Vector3D> Protein::get_CAs()const
+{
+   std::vector<Vector3D> res;
+   for(size_t i=0,i_size=atoms.size();i<i_size;++i)
+   {
+      if("CA"==atoms.at(i).pt) 
+      {
+         res.push_back(atoms.at(i).position);
+      }
+   }
+   return res;
+}
+
+void Protein::fit_to_(const Protein& ref, const int step_trial)
+{
+
+   const auto centering =
+      [](std::vector<Vector3D> res)->std::tuple<Vector3D,std::vector<Vector3D> >
+      {
+         Kahan x;
+         Kahan y;
+         Kahan z;
+         for(size_t i=0,i_size=res.size();i<i_size;++i)
+         {
+            x += res.at(i).x;
+            y += res.at(i).y;
+            z += res.at(i).z;
+         }
+         const Vector3D center(x.get_av(),y.get_av(),z.get_av());
+         for(size_t i=0,i_size=res.size();i<i_size;++i)
+         {
+            res.at(i) -= center;
+         }
+         return std::tuple<Vector3D,std::vector<Vector3D> >(center,res);
+      };
+   const auto refca  = centering(ref.get_CAs());
+   const auto rmsd_CA = [&](const auto& tmpca)
+   {
+      Kahan res=0.0;
+      for(size_t i=0,i_size=(std::get<1>(refca)).size();i<i_size;++i)
+      {
+         res+=(tmpca.at(i)-(std::get<1>(refca)).at(i)).norm2();
+      }
+      return res.get_av();
+   };
+
+   Vector3D rot_current;
+   Vector3D rot_tmp;
+   std::tuple<Vector3D,std::vector<Vector3D> > struct_begin  = centering(get_CAs());
+   std::vector<Vector3D> struct_current=std::get<1>(struct_begin);
+   std::vector<Vector3D> struct_tmp    =std::get<1>(struct_begin);
+   double rmsd_current=rmsd_CA(std::get<1>(struct_begin));
+   double rmsd_tmp;
+   constexpr double DELTA_RANGE = M_PI/50.0;
+   const Vector3D ax(1.0,0.0,0.0);
+   const Vector3D ay(0.0,1.0,0.0);
+   const Vector3D az(0.0,0.0,1.0);
+   for(int step=0;step<step_trial;++step)
+   {
+      Vector3D delta;
+      std::uniform_real_distribution<double> dist(-DELTA_RANGE,+DELTA_RANGE); 
+      do
+      {
+         delta.x = dist(mt);
+         delta.y = dist(mt);
+         delta.z = dist(mt);
+      }while(delta.norm2()>DELTA_RANGE);
+      rot_tmp=rot_current+delta;
+      struct_tmp = [&]()
+         {
+            std::vector<Vector3D> res(struct_current.size());
+            Quaternion qx(ax,rot_tmp.x);
+            Quaternion qy(ay,rot_tmp.y);
+            Quaternion qz(az,rot_tmp.z);
+            for(size_t i=0,i_size=res.size();i<i_size;++i)
+            {
+               Quaternion q = qz*qy*qx*(std::get<1>(struct_begin)).at(i)*bar(qx)*bar(qy)*bar(qz);
+               res.at(i) = Vector3D(q.b, q.c, q.d);
+            }
+            return res;
+         }();
+      rmsd_tmp = rmsd_CA(struct_tmp);
+      if(rmsd_current>rmsd_tmp)
+      {
+         rot_current    = rot_tmp;
+         struct_current = struct_tmp;
+         rmsd_current   = rmsd_tmp;
+      }
+   }
+   {//apply the result
+      Quaternion qx(ax,rot_current.x);
+      Quaternion qy(ay,rot_current.y);
+      Quaternion qz(az,rot_current.z);
+      for(size_t i=0,i_size=atoms.size();i<i_size;++i)
+      {
+         Vector3D& p = atoms.at(i).position;
+         p -= std::get<0>(struct_begin);
+         Quaternion q = qz*qy*qx*p*bar(qx)*bar(qy)*bar(qz);
+         p = Vector3D(q.b, q.c, q.d);
+         p += std::get<0>(refca);
+      }
+   }
 }
 
 std::vector<Protein> load(const std::string file_name, const std::tuple<double,double>& t_range)
