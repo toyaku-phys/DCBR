@@ -76,8 +76,8 @@ int main(int argc, char* argv[])
       std::vector<Vector3D> us;//include disp. of each residue
       for(int r=first_res;r<=last_res;++r)
       {
-         const Vector3D b = protein_m0.get_center_of_residue(target_residue_index);
-         const Vector3D a = pbc(protein_m1.get_center_of_residue(target_residue_index),b);
+         const Vector3D b = protein_m0.get_center_of_residue(r);
+         const Vector3D a = pbc(protein_m1.get_center_of_residue(r),b);
          const auto ab = b-a;
          us.push_back(ab);
       }

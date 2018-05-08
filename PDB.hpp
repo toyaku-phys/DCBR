@@ -31,7 +31,7 @@ class Protein
    std::vector<Vector3D> get_atoms_of_residue(const int& index)const;
    Vector3D get_center_of_residue(const int& index)const;
    std::vector<Vector3D> get_CAs()const;
-   void fit_to_(const Protein& ref, const int step_trial=10000);
+   void fit_to_(const Protein& ref, const int step_trial=100000);
 };
 
 class Atom
