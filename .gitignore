@@ -2,4 +2,5 @@
 a.out
 *.swp
 *.cas
+*.vtk
 test
