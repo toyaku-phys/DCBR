@@ -9,7 +9,7 @@
 
 Vector3D displacement_of_residue(const Protein& protein_a,const Protein& protein_b,const int& index_target_residue);
 double correlation(const Vector3D& a, const Vector3D& b);
-void plot_ca_for_gnuplot(const std::string file_name, const int step, const Protein& pr);
+void plot_ca_for_yuba(const std::string file_name, const int step, const Protein& pr);
 
 int main(int argc, char* argv[])
 {
@@ -66,6 +66,7 @@ int main(int argc, char* argv[])
    const int last_res   = protein_m1.get_index_of_last_resudue();
    const int pos_target = target_residue_index-first_res;
    std::vector<Kahan> correlations(last_res-first_res+1);
+   std::vector<Kahan> thetas(last_res-first_res+1);
    int step=0;
    for(;;)
    {
@@ -87,21 +88,22 @@ int main(int argc, char* argv[])
          const Vector3D& u_j    = us.at(r);
          const auto      res_c  = correlation(u_i,u_j);
          correlations.at(r)    += res_c;
+         thetas.at(r)          += std::acos(res_c/(u_i.norm()*u_j.norm()));
       }
       protein_m1 = protein_m0;
-      protein_m0.fit_to_(master,target_residue_index);
-      plot_ca_for_gnuplot("test.cas",step,protein_m0);
+      //protein_m0.fit_to_(master,target_residue_index);
+      //plot_ca_for_yuba("test.cas",step,protein_m0);
       std::cout<<"†"<<std::flush;
       ++step;
    }
    {
       std::ofstream ofs(output_file_name,std::ios::trunc);
-      ofs<<"# Res.index <u_i*u_j>_t"<<std::endl;
+      ofs<<"# Res.index <u_i*u_j>_t <theta>_t"<<std::endl;
       for(size_t i=0,i_size=correlations.size();i<i_size;++i)
       {
          if((i+first_res)!=target_residue_index)
          {
-            ofs<<(i+first_res)<<" "<<correlations.at(i).get_av()<<std::endl;
+            ofs<<(i+first_res)<<" "<<correlations.at(i).get_av()<<" "<<thetas.at(i).get_av()<<std::endl;
          }else
          {
             ofs<<std::endl<<std::endl;
@@ -129,15 +131,22 @@ double correlation(const Vector3D& u_i, const Vector3D& u_j)
    return u_i*u_j;   
 }
 
-void plot_ca_for_gnuplot(const std::string file_name, const int step, const Protein& pr)
+void plot_ca_for_yuba(const std::string file_name, const int step, const Protein& pr)
 {
    const std::vector<Vector3D> cas = pr.get_CAs();
    if(0==step)
    {
       std::ofstream ofs(file_name,std::ios::trunc);
+      ofs<<"# Coordinate "<<step<<std::endl;
       for(size_t i=0,i_size=cas.size();i<i_size;++i)
       {
          ofs<<i<<" "<<cas.at(i)<<std::endl;
+      }
+      ofs<<std::endl;
+      ofs<<"# Bond "<<step<<std::endl;
+      for(size_t i=1,i_size=cas.size();i<i_size;++i)
+      {
+         ofs<<i-1<<" "<<i<<std::endl;
       }
       ofs<<std::endl<<std::endl;
       ofs.close();
@@ -145,9 +154,16 @@ void plot_ca_for_gnuplot(const std::string file_name, const int step, const Prot
    else
    {
       std::ofstream ofs(file_name,std::ios::app);
+      ofs<<"# Coordinate "<<step<<std::endl;
       for(size_t i=0,i_size=cas.size();i<i_size;++i)
       {
          ofs<<i<<" "<<cas.at(i)<<std::endl;
+      }
+      ofs<<std::endl;
+      ofs<<"# Bond "<<step<<std::endl;
+      for(size_t i=1,i_size=cas.size();i<i_size;++i)
+      {
+         ofs<<i-1<<" "<<i<<" "<<step<<std::endl;
       }
       ofs<<std::endl<<std::endl;
       ofs.close();
