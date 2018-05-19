@@ -8,6 +8,8 @@
 #include "Kahan_summation_algorithm.hpp"
 
 Vector3D displacement_of_residue(const Protein& protein_a,const Protein& protein_b,const int& index_target_residue);
+Vector3D velocity_of_residue
+(const Protein& protein_a,const Protein& protein_b,const int& index_target_residue);
 double correlation(const Vector3D& a, const Vector3D& b);
 void plot_ca_for_yuba(const std::string file_name, const int step, const Protein& pr);
 
@@ -125,6 +127,19 @@ Vector3D displacement_of_residue
    const Vector3D a = pbc(protein_a.get_center_of_residue(index_target_residue),b);
    return b-a;
 }
+
+Vector3D velocity_of_residue
+(
+   const Protein& protein_a,
+   const Protein& protein_b,
+   const int& index_target_residue
+)
+{
+   const Vector3D b = protein_b.get_center_of_residue(index_target_residue);
+   const Vector3D a = pbc(protein_a.get_center_of_residue(index_target_residue),b);
+   return (b-a)/(protein_b.time-protein_a.time);
+}
+
 
 double correlation(const Vector3D& u_i, const Vector3D& u_j)
 {
