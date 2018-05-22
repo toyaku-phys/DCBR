@@ -23,6 +23,7 @@ int main(int argc, char* argv[])
    int target_residue_index;
    std::tuple<double,double> time_range(-DBL_MAX,+DBL_MAX);
    bool silent=false;
+   int DELTA=5;
 
    try
    {
@@ -52,6 +53,10 @@ int main(int argc, char* argv[])
                boost::lexical_cast<double>(vs_.at(1))
             ); 
          }
+         if("delta"==vs.at(0))
+         {
+            DELTA = boost::lexical_cast<int>(vs.at(1));
+         }
          if("--silent"==argments.at(i))
          {
             silent=true;
@@ -62,11 +67,10 @@ int main(int argc, char* argv[])
       std::cout<<"Failure @input argments"<<std::endl;exit(0);
    }
    
-   int DELTA = 1;
    int rbegn = 1;
    std::vector<std::vector<Kahan> > correlationss;
    std::string marks = "!@#$%";
-   for(DELTA=0;DELTA<10;++DELTA)
+   for(int d=0;d<=DELTA;++d)
    {
    Getline gl_m(input_file_name);
    Getline gl_z(input_file_name);
