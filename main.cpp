@@ -102,7 +102,15 @@ int main(int argc, char* argv[])
       }catch(...){break;}
       if(!silent)
       {
-         std::cout<<marks.at(DELTA%5)<<std::flush;
+         static int idx=0;
+         switch(idx++)
+         {
+            case 0: std::cout<<"ま"<<std::flush;break;
+            case 1: 
+            case 2: std::cout<<"だ"<<std::flush;break;
+            case 3: std::cout<<"よ"<<std::flush;break;
+            default: std::cout<<"!"<<std::flush;idx=0;break;
+         };
       }
    }//end of ;;
    correlationss.push_back(correlations);
@@ -123,6 +131,10 @@ int main(int argc, char* argv[])
       }
       ofs.close();
    }
+
+   std::cout<<std::endl;
+   std::cout<<"もういいよ！"<<std::endl;
+
    return EXIT_SUCCESS;
 }
 
