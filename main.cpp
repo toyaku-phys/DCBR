@@ -22,6 +22,7 @@ int main(int argc, char* argv[])
    std::string output_file_name;
    int target_residue_index;
    std::tuple<double,double> time_range(-DBL_MAX,+DBL_MAX);
+   bool silent=false;
 
    try
    {
@@ -50,6 +51,10 @@ int main(int argc, char* argv[])
                boost::lexical_cast<double>(vs_.at(0)),
                boost::lexical_cast<double>(vs_.at(1))
             ); 
+         }
+         if("--silent"==argments.at(i))
+         {
+            silent=true;
          }
       }
    }catch(...)
@@ -86,7 +91,6 @@ int main(int argc, char* argv[])
          const Vector3D v_j = velocity_of_residue(std::get<0>(zero),std::get<1>(zero),r);
          correlations.at(r-rbegn) += correlation(mv_pos,v_j)/(mv_pos.norm()*v_j.norm());
       }
-      //ここでおくる
       try
       {
          Protein tmp = std::get<1>(zero); 
@@ -96,7 +100,10 @@ int main(int argc, char* argv[])
          std::get<1> (minus) = get_next(gl_m,time_range);
          std::get<0> (minus) = tmp;
       }catch(...){break;}
-      std::cout<<marks.at(DELTA%5);
+      if(!silent)
+      {
+         std::cout<<marks.at(DELTA%5)<<std::flush;
+      }
    }//end of ;;
    correlationss.push_back(correlations);
    }
