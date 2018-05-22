@@ -77,7 +77,7 @@ int main(int argc, char* argv[])
    std::tuple<Protein,Protein> minus(get_next(gl_m,time_range,true),get_next(gl_m,time_range));//-+
    std::tuple<Protein,Protein> zero(get_next(gl_z,time_range,true),get_next(gl_z,time_range));
    //shift delta
-   for(int dlt=0;dlt<DELTA;++dlt)
+   for(int dlt=0;dlt<d;++dlt)
    {
       Protein tmp = std::get<1> (zero);
       std::get<1> (zero) = get_next(gl_z,time_range);
@@ -136,8 +136,11 @@ int main(int argc, char* argv[])
       ofs.close();
    }
 
-   std::cout<<std::endl;
-   std::cout<<"もういいよ！"<<std::endl;
+   if(!silent)
+   {
+      std::cout<<std::endl;
+      std::cout<<"もういいよ！"<<std::endl;
+   }
 
    return EXIT_SUCCESS;
 }
