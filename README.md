@@ -1,33 +1,37 @@
-# DCBR
-DCBR analyzes the correlation for the displacement of protein residue pairs.
+# DCBR v2
+タンパク質の残基間の速度相関関数を解析するためのプログラムである。
 
-## Definition of the correlation function
+## 速度相関関数の定義
+<img src="doc/eq1.png"/>
 
-The displacement correlation function for pair of residues is defined as
+- <img src="doc/v.png"/>
+- <img src="doc/u.png"/>
+- <img src="doc/pi.png"/> : <img src="doc/i.png"/> 番目の残基のうち<img src="doc/ca.png"/>を除いた全ての原子の位置
+- <img src="doc/t.png"/> : サンプリング対象の時刻
+- <img src="doc/dt.png"/> : 入力ファイル内の最小の時間間隔
+- <img src="doc/av.png"/> : <img src="doc/t.png"/> で平均
+- <img src="doc/a.png"/> : <img src="doc/veca.png"/> のノルム(L2)
 
-<img src="https://latex.codecogs.com/gif.latex?C(i,j):=\langle\vec{u}_i(t)\cdot\vec{u}_j(t)\rangle_t" />. with <img src="https://latex.codecogs.com/gif.latex?\vec{u}_i(t):=\vec{p}_i(t+\Delta)-\vec{p}_i(t)." />
+## 使用
+dcbr
 
-Here, <img src="https://latex.codecogs.com/gif.latex?\vec{p}_i" /> is center of atom positions of 
-<img src="https://latex.codecogs.com/gif.latex?i" />
--th residue (without "CA" atom).
-<img src="https://latex.codecogs.com/gif.latex?\Delta" /> is time interval in the input file.
-Time average <img src="https://latex.codecogs.com/gif.latex?C(i,j):=\langle\cdots\rangle_t" /> 
-is calculated using all samples.
-If you need the center of mass or diffrent time interval, you can *write* next DCBR!
+in=入力.pdb
 
+out=出力ファイル名
 
-Our DCBR program provides 
-<img src="https://latex.codecogs.com/gif.latex?\{C(i,j)\}" />
-, where index of residue <img src="https://latex.codecogs.com/gif.latex?i" /> is fixed (this residue is reference).
+step=サンプリング開始時刻-終了時刻
 
-## Using DCBR
-dcbr in=input_file.pdb out=output_file_name step=0-1000 target=index_of_reference_residue
+target=対象残基は何番めの残基か？(i)
 
-## Building
-example: clang++-5.0 -std=c++1z -stdlib=libc++ main.cpp -O2 -o dcbr
+delta=n_max (n=[0:n_max]で解析する)
 
-Also, our code depends on the boost library.
+オプション --silence
 
-## Future work
-- Display this correlation with PyMol.
-- Setting of <img src="https://latex.codecogs.com/gif.latex?\Delta" /> 
+を１行で実行すること。
+
+## ビルド
+例: clang++-5.0 -std=c++1z -stdlib=libc++ main.cpp -O2 -o dcbr
+
+また、コードは boost を利用しているため、設定していないのなら、それについてパスを通す必要がある。
+
+boost を macports でインストールしているのなら、-I/opt/local/include/ を上記のものに追加する。
