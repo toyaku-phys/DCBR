@@ -56,57 +56,58 @@ int main(int argc, char* argv[])
    {
       std::cout<<"Failure @input argments"<<std::endl;exit(0);
    }
-
-   constexpr int MAX_INTERVAL=10;
-   int first_res;
+   
+   int DELTA = 1;
+   int rbegn = 1;
    std::vector<std::vector<Kahan> > correlationss;
-   for(int interval=0;interval<=MAX_INTERVAL;++interval)
+   std::string marks = "!@#$%";
+   for(DELTA=0;DELTA<10;++DELTA)
    {
-      Getline gl(input_file_name);
-      Protein master     = get_next(gl,time_range,true);
-      Protein protein_m1 = master;
-      Protein protein_m0;
-      pbc_setup(protein_m1.cryst);
-
-                first_res  = protein_m1.get_index_of_first_resudue();
-      const int last_res   = protein_m1.get_index_of_last_resudue();
-      const int pos_target = target_residue_index-first_res;
-      std::vector<Kahan> correlations(last_res-first_res+1);
-      int step=0;
-      for(;;)
+   Getline gl_m(input_file_name);
+   Getline gl_z(input_file_name);
+   std::tuple<Protein,Protein> minus(get_next(gl_m,time_range,true),get_next(gl_m,time_range));//-+
+   std::tuple<Protein,Protein> zero(get_next(gl_z,time_range,true),get_next(gl_z,time_range));
+   //shift delta
+   for(int dlt=0;dlt<DELTA;++dlt)
+   {
+      Protein tmp = std::get<1> (zero);
+      std::get<1> (zero) = get_next(gl_z,time_range);
+      std::get<0> (zero) = tmp;
+   }
+             rbegn=(std::get<0>(zero)).get_index_of_first_resudue();
+   const int rlast=(std::get<0>(zero)).get_index_of_last_resudue();
+   std::vector<Kahan> correlations(rlast-rbegn+1);
+   for(;;)
+   {
+      //each res
+      const Vector3D mv_pos = velocity_of_residue(std::get<0>(minus),std::get<1>(minus),target_residue_index);
+      for(int r=rbegn;r<=rlast;++r)
       {
-         try{
-            for(int s=0;s<interval;++s)
-            {protein_m0 = get_next(gl,time_range);}
-         }catch(...){std::cout<<"end"<<std::endl;break;}
+         const Vector3D v_j = velocity_of_residue(std::get<0>(zero),std::get<1>(zero),r);
+         correlations.at(r-rbegn) += correlation(mv_pos,v_j)/(mv_pos.norm()*v_j.norm());
+      }
+      //ここでおくる
+      try
+      {
+         Protein tmp = std::get<1>(zero); 
+         std::get<1> (zero) = get_next(gl_z,time_range);
+         std::get<0> (zero) = tmp;
+         tmp = std::get<1>(minus);
+         std::get<1> (minus) = get_next(gl_m,time_range);
+         std::get<0> (minus) = tmp;
+      }catch(...){break;}
+      std::cout<<marks.at(DELTA%5);
+   }//end of ;;
+   correlationss.push_back(correlations);
+   }
 
-         std::vector<Vector3D> vs;//include disp. of each residue
-         for(int r=first_res;r<=last_res;++r)
-         {
-            vs.push_back(velocity_of_residue(protein_m0,protein_m1,r));
-         }
-         const Vector3D& v_i = vs.at(pos_target);
-         for(size_t r=0,r_size=vs.size();r<r_size;++r)
-         {
-            const Vector3D& v_j    = vs.at(r);
-            const auto      res_c  = correlation(v_i,v_j)/(v_i.norm()*v_j.norm());
-            correlations.at(r)    += res_c;
-         }
-         protein_m1 = protein_m0;
-         //protein_m0.fit_to_(master,target_residue_index);
-         //plot_ca_for_yuba("test.cas",step,protein_m0);
-         std::cout<<"†"<<std::flush;
-         ++step;
-      }//end of for(;;)
-      correlationss.push_back(correlations);
-   }//end of for(interval)
    {
       std::ofstream ofs(output_file_name,std::ios::trunc);
       ofs<<"# Res.index <(v_i(0)*v_j(t))/sqrt{v_i^2(0) vj^2(t)}>_t"<<std::endl;
       size_t size = correlationss.front().size();
       for(size_t r=0;r<size;++r)
       {
-         ofs<<(r+first_res)<<" ";
+         ofs<<(r+rbegn)<<" ";
          for(size_t i=0,i_size=correlationss.size();i<i_size;++i)
          {
             ofs<<correlationss.at(i).at(r).get_av()<<" ";
