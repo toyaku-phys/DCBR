@@ -22,6 +22,8 @@ int main(int argc, char* argv[])
    std::string output_file_name;
    int target_residue_index;
    std::tuple<double,double> time_range(-DBL_MAX,+DBL_MAX);
+   bool silent=false;
+   int DELTA=5;
 
    try
    {
@@ -51,17 +53,24 @@ int main(int argc, char* argv[])
                boost::lexical_cast<double>(vs_.at(1))
             ); 
          }
+         if("delta"==vs.at(0))
+         {
+            DELTA = boost::lexical_cast<int>(vs.at(1));
+         }
+         if("--silent"==argments.at(i))
+         {
+            silent=true;
+         }
       }
    }catch(...)
    {
       std::cout<<"Failure @input argments"<<std::endl;exit(0);
    }
    
-   int DELTA = 1;
    int rbegn = 1;
    std::vector<std::vector<Kahan> > correlationss;
    std::string marks = "!@#$%";
-   for(DELTA=0;DELTA<10;++DELTA)
+   for(int d=0;d<=DELTA;++d)
    {
    Getline gl_m(input_file_name);
    Getline gl_z(input_file_name);
@@ -86,7 +95,6 @@ int main(int argc, char* argv[])
          const Vector3D v_j = velocity_of_residue(std::get<0>(zero),std::get<1>(zero),r);
          correlations.at(r-rbegn) += correlation(mv_pos,v_j)/(mv_pos.norm()*v_j.norm());
       }
-      //ここでおくる
       try
       {
          Protein tmp = std::get<1>(zero); 
@@ -96,7 +104,18 @@ int main(int argc, char* argv[])
          std::get<1> (minus) = get_next(gl_m,time_range);
          std::get<0> (minus) = tmp;
       }catch(...){break;}
-      std::cout<<marks.at(DELTA%5);
+      if(!silent)
+      {
+         static int idx=0;
+         switch(idx++)
+         {
+            case 0: std::cout<<"ま"<<std::flush;break;
+            case 1: 
+            case 2: std::cout<<"だ"<<std::flush;break;
+            case 3: std::cout<<"よ"<<std::flush;break;
+            default: std::cout<<"!"<<std::flush;idx=0;break;
+         };
+      }
    }//end of ;;
    correlationss.push_back(correlations);
    }
@@ -116,6 +135,10 @@ int main(int argc, char* argv[])
       }
       ofs.close();
    }
+
+   std::cout<<std::endl;
+   std::cout<<"もういいよ！"<<std::endl;
+
    return EXIT_SUCCESS;
 }
 
