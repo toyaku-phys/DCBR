@@ -2,15 +2,15 @@
 タンパク質の残基間の速度相関関数を解析するためのプログラムである。
 
 ## 速度相関関数の定義
-<img src="https://latex.codecogs.com/gif.latex?C_{i,j}(n):=\left\langle\cfrac{\vec{v}_i(t)\cdot\vec{v}_j(t+n\Delta t)}{|\vec{v}_i(t)| |\vec{v}_j(t+n\Delta t)|}\right\rangle_t"/>
+<img src="doc/eq1.png"/>
 
-- <img src="https://latex.codecogs.com/gif.latex?\vec{v}_i:=\vec{u}_i/\Delta t"/>
-- <img src="https://latex.codecogs.com/gif.latex?\vec{u}_i:=\vec{p}_i(t-\Delta t)-\vec{p}_i(t)"/>
-- <img src="https://latex.codecogs.com/gif.latex?\vec{p}_i"/> : <img src="https://latex.codecogs.com/gif.latex?i"/> 番目の残基のうち<img src="https://latex.codecogs.com/gif.latex?C_\alpha"/>を除いた全ての原子の位置
-- <img src="https://latex.codecogs.com/gif.latex?t"/> : サンプリング対象の時刻
-- <img src="https://latex.codecogs.com/gif.latex?\Delta t"/> : 入力ファイル内の最小の時間間隔
-- <img src="https://latex.codecogs.com/gif.latex?\langle\cdots\rangle_t"/> : <img src="https://latex.codecogs.com/gif.latex?t"/> で平均
-- <img src="https://latex.codecogs.com/gif.latex?|\vec{a}|"/> : <img src="https://latex.codecogs.com/gif.latex?\vec{a}"/> のノルム(L2)
+- <img src="doc/v.png"/>
+- <img src="doc/u.png"/>
+- <img src="doc/pi.png"/> : <img src="doc/i.png"/> 番目の残基のうち<img src="doc/ca.png"/>を除いた全ての原子の位置
+- <img src="doc/t.png"/> : サンプリング対象の時刻
+- <img src="doc/dt.png"/> : 入力ファイル内の最小の時間間隔
+- <img src="doc/av.png"/> : <img src="doc/t.png"/> で平均
+- <img src="doc/a.png"/> : <img src="doc/veca.png"/> のノルム(L2)
 
 ## 使用
 dcbr
