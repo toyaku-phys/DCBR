@@ -6,7 +6,7 @@
 
 - <img src="doc/v.png"/>
 - <img src="doc/u.png"/>
-- <img src="doc/pi.png"/> : <img src="doc/i.png"/> 番目の残基のうち<img src="doc/ca.png"/>を除いた全ての原子の位置
+- <img src="doc/pi.png"/> : <img src="doc/i.png"/> 番目の残基のうち<img src="doc/ca.png"/>を除いた全ての原子の位置の平均
 - <img src="doc/t.png"/> : サンプリング対象の時刻
 - <img src="doc/dt.png"/> : 入力ファイル内の最小の時間間隔
 - <img src="doc/av.png"/> : <img src="doc/t.png"/> で平均
