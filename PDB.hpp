@@ -31,7 +31,7 @@ class Protein
    std::vector<Vector3D> get_atoms_of_residue(const int& index)const;
    Vector3D get_center_of_residue(const int& index)const;
    std::vector<Vector3D> get_CAs()const;
-   void fit_to_(const Protein& ref, const int step_trial=10000);
+   void fit_to_(const Protein& ref, const int& index_res, const int step_trial=100000);
 };
 
 class Atom
@@ -113,29 +113,29 @@ std::vector<Vector3D> Protein::get_CAs()const
    return res;
 }
 
-void Protein::fit_to_(const Protein& ref, const int step_trial)
+void Protein::fit_to_(const Protein& ref, const int& index_res, const int step_trial)
 {
 
    const auto centering =
-      [](std::vector<Vector3D> res)->std::tuple<Vector3D,std::vector<Vector3D> >
+      [](std::vector<Vector3D> res, const Vector3D& center)->std::tuple<Vector3D,std::vector<Vector3D> >
       {
-         Kahan x;
-         Kahan y;
-         Kahan z;
-         for(size_t i=0,i_size=res.size();i<i_size;++i)
-         {
-            x += res.at(i).x;
-            y += res.at(i).y;
-            z += res.at(i).z;
-         }
-         const Vector3D center(x.get_av(),y.get_av(),z.get_av());
+         //Kahan x;
+         //Kahan y;
+         //Kahan z;
+         //for(size_t i=0,i_size=res.size();i<i_size;++i)
+         //{
+         //   x += res.at(i).x;
+         //   y += res.at(i).y;
+         //   z += res.at(i).z;
+         //}
+         //const Vector3D center(x.get_av(),y.get_av(),z.get_av());
          for(size_t i=0,i_size=res.size();i<i_size;++i)
          {
             res.at(i) -= center;
          }
          return std::tuple<Vector3D,std::vector<Vector3D> >(center,res);
       };
-   const auto refca  = centering(ref.get_CAs());
+   const auto refca  = centering(ref.get_CAs(),ref.get_center_of_residue(index_res));
    const auto rmsd_CA = [&](const auto& tmpca)
    {
       Kahan res=0.0;
@@ -148,7 +148,7 @@ void Protein::fit_to_(const Protein& ref, const int step_trial)
 
    Vector3D rot_current;
    Vector3D rot_tmp;
-   std::tuple<Vector3D,std::vector<Vector3D> > struct_begin  = centering(get_CAs());
+   std::tuple<Vector3D,std::vector<Vector3D> > struct_begin  = centering(get_CAs(),get_center_of_residue(index_res));
    std::vector<Vector3D> struct_current=std::get<1>(struct_begin);
    std::vector<Vector3D> struct_tmp    =std::get<1>(struct_begin);
    double rmsd_current=rmsd_CA(std::get<1>(struct_begin));

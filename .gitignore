@@ -2,3 +2,6 @@
 *.out
 *.swp
 *test
+*.cas
+*.vtk
+test
