@@ -1,9 +1,3 @@
-/*
-   Copyright: Itoga and Takeuchi
-   License: MIT (for all files)
-*/
-
-
 #include "PDB.hpp"
 #include "Kahan_summation_algorithm.hpp"
 
