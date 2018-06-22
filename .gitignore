@@ -1,6 +1,7 @@
 *.gch
-a.out
+*.out
 *.swp
+*test
 *.cas
 *.vtk
 test
