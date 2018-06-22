@@ -17,7 +17,8 @@ int main(int argc, char* argv[])
    int target_residue_index;
    std::tuple<double,double> time_range(-DBL_MAX,+DBL_MAX);
    bool silent=false;
-   int DELTA=5;
+//   int DELTA=5;
+   std::tuple<int,int> delta_range;
 
    try
    {
@@ -47,9 +48,13 @@ int main(int argc, char* argv[])
                boost::lexical_cast<double>(vs_.at(1))
             ); 
          }
-         if("delta"==vs.at(0))
+         if("delta_range"==vs.at(0))
          {
-            DELTA = boost::lexical_cast<int>(vs.at(1));
+            std::vector<std::string> vs_;
+            boost::algorithm::split(vs_,vs.at(1),boost::is_any_of("-"));
+            //DELTA = boost::lexical_cast<int>(vs.at(1));
+            std::get<0>(delta_range) = boost::lexical_cast<int> (vs_.at(0));
+            std::get<1>(delta_range) = boost::lexical_cast<int> (vs_.at(1));
          }
          if("--silent"==argments.at(i))
          {
@@ -64,7 +69,7 @@ int main(int argc, char* argv[])
    int rbegn = 1;
    std::vector<std::vector<Kahan> > correlationss;
    std::string marks = "!@#$%";
-   for(int d=0;d<=DELTA;++d)
+   for(int d=std::get<0>(delta_range);d<=std::get<1>(delta_range);++d)
    {
    Getline gl_m(input_file_name);
    Getline gl_z(input_file_name);
