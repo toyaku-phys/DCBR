@@ -19,23 +19,29 @@ int main(int argc, char* argv[])
    bool silent=false;
    std::tuple<int,int> delta_range;
 
+   std::bitset<5> flags("00000");
+
    try
    {
       for(size_t i=0,i_size=argments.size();i<i_size;++i)
       {
+         std::cout<<argments.at(i)<<std::endl;
          std::vector<std::string> vs;
          boost::algorithm::split(vs,argments.at(i),boost::is_any_of("="));
          if("in"==vs.at(0))
          {
             input_file_name=vs.at(1);
+            flags.set(0);
          }
          if("out"==vs.at(0))
          {
             output_file_name=vs.at(1);
+            flags.set(1);
          }
          if("target"==vs.at(0))
          {
-            target_residue_index=boost::lexical_cast<double>(vs.at(1));
+            target_residue_index=boost::lexical_cast<int>(vs.at(1));
+            flags.set(2);
          }
          if("time"==vs.at(0))
          {
@@ -46,20 +52,23 @@ int main(int argc, char* argv[])
                boost::lexical_cast<double>(vs_.at(0)),
                boost::lexical_cast<double>(vs_.at(1))
             ); 
+            flags.set(3);
          }
          if("delta_range"==vs.at(0))
          {
             std::vector<std::string> vs_;
             boost::algorithm::split(vs_,vs.at(1),boost::is_any_of("-"));
-            //DELTA = boost::lexical_cast<int>(vs.at(1));
             std::get<0>(delta_range) = boost::lexical_cast<int> (vs_.at(0));
             std::get<1>(delta_range) = boost::lexical_cast<int> (vs_.at(1));
+            flags.set(4);
          }
          if("--silent"==argments.at(i))
          {
             silent=true;
          }
       }
+      std::cout<<flags.count()<<std::endl<<std::flush; 
+      if(!flags.all()){throw "flag";}
    }catch(...)
    {
       std::cout<<"Failure @input argments"<<std::endl;exit(0);
@@ -67,7 +76,6 @@ int main(int argc, char* argv[])
    
    int rbegn = 1;
    std::vector<std::vector<Kahan> > correlationss;
-   std::string marks = "!@#$%";
    for(int d=std::get<0>(delta_range);d<=std::get<1>(delta_range);++d)
    {
    Getline gl_m(input_file_name);
