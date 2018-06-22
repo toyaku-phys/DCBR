@@ -25,7 +25,6 @@ int main(int argc, char* argv[])
    {
       for(size_t i=0,i_size=argments.size();i<i_size;++i)
       {
-         std::cout<<argments.at(i)<<std::endl;
          std::vector<std::string> vs;
          boost::algorithm::split(vs,argments.at(i),boost::is_any_of("="));
          if("in"==vs.at(0))
