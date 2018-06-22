@@ -19,13 +19,13 @@ in=入力.pdb
 
 out=出力ファイル名
 
-step=サンプリング開始時刻-終了時刻
+time=サンプリング開始時刻-終了時刻
 
 target=対象残基は何番めの残基か？(i)
 
-delta=n_max (n=[0:n_max]で解析する)
+delta_range=n_min-n_max (n=[n_min:n_max]で解析する)
 
-オプション --silence
+オプション --silent
 
 を１行で実行すること。
 
