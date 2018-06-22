@@ -17,7 +17,6 @@ int main(int argc, char* argv[])
    int target_residue_index;
    std::tuple<double,double> time_range(-DBL_MAX,+DBL_MAX);
    bool silent=false;
-//   int DELTA=5;
    std::tuple<int,int> delta_range;
 
    try
