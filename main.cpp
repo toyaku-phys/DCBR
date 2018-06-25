@@ -75,72 +75,72 @@ int main(int argc, char* argv[])
    
    int rbegn = 1;
    std::vector<std::vector<Kahan> > correlationss;
-	bool f_delta_t = false;
-	double Delta_T = 0.0;
+   bool f_delta_t = false;
+   double Delta_T = 0.0;
    for(int d=std::get<0>(delta_range);d<=std::get<1>(delta_range);++d)
    {
-   	Getline gl_m(input_file_name);
-   	Getline gl_z(input_file_name);
-   	std::tuple<Protein,Protein> minus(get_next(gl_m,time_range,true),get_next(gl_m,time_range));//-+
-   	std::tuple<Protein,Protein> zero(get_next(gl_z,time_range,true),get_next(gl_z,time_range));
-   	//shift delta
-   	for(int dlt=0;dlt<d;++dlt)
-   	{
-   	   Protein tmp = std::get<1> (zero);
-   	   std::get<1> (zero) = get_next(gl_z,time_range);
-			if(!f_delta_t){Delta_T=std::abs(zero.time-tmp.time);}
-   	   std::get<0> (zero) = tmp;
-   	}
-   	          rbegn=(std::get<0>(zero)).get_index_of_first_resudue();
-   	const int rlast=(std::get<0>(zero)).get_index_of_last_resudue();
-   	std::vector<Kahan> correlations(rlast-rbegn+1);
-   	for(;;)
-   	{
-   	   //each res
-   	   const Vector3D mv_pos = velocity_of_residue(std::get<0>(minus),std::get<1>(minus),target_residue_index);
-   	   for(int r=rbegn;r<=rlast;++r)
-   	   {
-   	      const Vector3D v_j = velocity_of_residue(std::get<0>(zero),std::get<1>(zero),r);
-   	      correlations.at(r-rbegn) += correlation(mv_pos,v_j)/(mv_pos.norm()*v_j.norm());
-   	   }
-   	   try
-   	   {
-   	      Protein tmp = std::get<1>(zero); 
-   	      std::get<1> (zero) = get_next(gl_z,time_range);
-   	      std::get<0> (zero) = tmp;
-   	      tmp = std::get<1>(minus);
-   	      std::get<1> (minus) = get_next(gl_m,time_range);
-   	      std::get<0> (minus) = tmp;
-   	   }catch(...){break;}
-   	   if(!silent)
-   	   {
-   	      static int idx=0;
-   	      switch(idx++)
-   	      {
-   	         case 0: std::cout<<"ま"<<std::flush;break;
-   	         case 1: 
-   	         case 2: std::cout<<"だ"<<std::flush;break;
-   	         case 3: std::cout<<"よ"<<std::flush;break;
-   	         default: std::cout<<"!"<<std::flush;idx=0;break;
-   	      };
-   	   }
-   	}//end of ;;
-   	correlationss.push_back(correlations);
+      Getline gl_m(input_file_name);
+      Getline gl_z(input_file_name);
+      std::tuple<Protein,Protein> minus(get_next(gl_m,time_range,true),get_next(gl_m,time_range));//-+
+      std::tuple<Protein,Protein> zero(get_next(gl_z,time_range,true),get_next(gl_z,time_range));
+      //shift delta
+      for(int dlt=0;dlt<d;++dlt)
+      {
+         Protein tmp = std::get<1> (zero);
+         std::get<1> (zero) = get_next(gl_z,time_range);
+         if(!f_delta_t){Delta_T=std::abs(std::get<1>(zero).time-tmp.time);}
+         std::get<0> (zero) = tmp;
+      }
+                rbegn=(std::get<0>(zero)).get_index_of_first_resudue();
+      const int rlast=(std::get<0>(zero)).get_index_of_last_resudue();
+      std::vector<Kahan> correlations(rlast-rbegn+1);
+      for(;;)
+      {
+         //each res
+         const Vector3D mv_pos = velocity_of_residue(std::get<0>(minus),std::get<1>(minus),target_residue_index);
+         for(int r=rbegn;r<=rlast;++r)
+         {
+            const Vector3D v_j = velocity_of_residue(std::get<0>(zero),std::get<1>(zero),r);
+            correlations.at(r-rbegn) += correlation(mv_pos,v_j)/(mv_pos.norm()*v_j.norm());
+         }
+         try
+         {
+            Protein tmp = std::get<1>(zero); 
+            std::get<1> (zero) = get_next(gl_z,time_range);
+            std::get<0> (zero) = tmp;
+            tmp = std::get<1>(minus);
+            std::get<1> (minus) = get_next(gl_m,time_range);
+            std::get<0> (minus) = tmp;
+         }catch(...){break;}
+         if(!silent)
+         {
+            static int idx=0;
+            switch(idx++)
+            {
+               case 0: std::cout<<"ま"<<std::flush;break;
+               case 1: 
+               case 2: std::cout<<"だ"<<std::flush;break;
+               case 3: std::cout<<"よ"<<std::flush;break;
+               default: std::cout<<"!"<<std::flush;idx=0;break;
+            };
+         }
+      }//end of ;;
+      correlationss.push_back(correlations);
    }
 
    {
       std::ofstream ofs(output_file_name,std::ios::trunc);
-		int idx=0;
-		ofs<<"# n C(R_1) C(R_2) ..."
+      int idx=0;
+      ofs<<"# n C(R_1) C(R_2) ..."<<std::endl;
       for(int d=std::get<0>(delta_range);d<=std::get<1>(delta_range);++d,++idx)
-		{
-			ofs<<d*Delta_T<<" ";
-			const std::vector<Kahan>& rs = correlationss.at(idx);
-			for(size_t i=0,i_size=rs.size();i<i_size;++i)
-			{
-				ofs<<rs.at(i)<<" ";
-			}
-		}
+      {
+         ofs<<d*Delta_T<<" ";
+         const std::vector<Kahan>& rs = correlationss.at(idx);
+         for(size_t i=0,i_size=rs.size();i<i_size;++i)
+         {
+            ofs<<rs.at(i).get_av()<<" ";
+         }
+      }
       
    }
 
